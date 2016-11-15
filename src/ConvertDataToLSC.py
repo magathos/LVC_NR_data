@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import sys
 sys.path.insert(0, './export/')
 sys.path.insert(0, './import/')
@@ -11,7 +12,7 @@ input_path = "/store/DAMTP/cjm96/public_html/Modes/"
 #data = LoadUliData(input_path)
 
 # Save Data
-output_path = "$HOME/Desktop/"
+output_path = os.environ['HOME']+"/Desktop/"
 output_file = "test.h5"
 
 data = np.zeros((100,2))
