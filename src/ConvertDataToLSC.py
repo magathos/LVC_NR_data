@@ -13,36 +13,41 @@ from NR_Export import *
 
 class NR_data:
 #  Class that hosts imported data from NR simulations
-  def __init__(self, nrtype, nrid, lmax=2):
+  def __init__(self, nrtype, nrid, sourcedir, lmax=2):
     self.lmax = lmax
     self.nrid = nrid
     self.nrtype = nrtype
+    self.sourcedir = sourcedir
     self.Psi4modes = []
 
   def populate_modes(self, lmax):
     '''Populate modes with data for l<=lmax'''
-    modelist = []
-    llist = arange(lmax-1) + 2
+    modedict = {}
+    llist = arange(self.lmax-1) + 2
     for l in llist:
-      modelist.append()
       mlist = arange(2*l+1) - l
+      modedict[l] = {}
       for m in mlist:
-      thisNR_mode = NR_mode(l, m, nrtype)
+        thisNR_mode = NR_mode(l, m, self.nrtype, self.sourcedir)
+        thisNR_mode.load_data()
+        modedict[l][m] = thisNR_mode
         
     self.Psi4modes = modelist
 
     
   def Psi4mode(self, l, m):
     '''Get the mode (l,m)'''
-    return
+    return self.Psi4modes[l][m]
 
 
 
 class NR_mode: 
   '''Class that holds NR data for one (l,m) mode of Psi4'''
-  def __init__(self, l, m, nrtype, source=None):
+  def __init__(self, l, m, r, nrtype, sourcedir, source=None):
     self.l = l
     self.m = m
+    self.radius = r
+    self.sourcedir = sourcedir
     self.nrtype = nrtype
     if abs(m) > l:
       print "ERROR: Cannot generate mode with |m| > l. Exiting..."
@@ -50,10 +55,10 @@ class NR_mode:
     if source is not None:
       self.write_data(source)
 
-  def write_data(self, source):
-    '''write data to mode'''
+  def load_data(self, source=None):
+    '''Write Psi4 time series data to mode'''
     loadmodefunc = loadFuncDict[self.nrtype]
-    nrtime, Psi4C = loadmodefunc(source)
+    nrtime, Psi4C = loadmodefunc(self.l, self.m, self.r, self.sourcedir)
     #sanity checks
     self.t = nrtime
     self.Psi4C = Psi4C
