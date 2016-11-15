@@ -18,22 +18,46 @@ class NR_data:
     self.lmax = lmax
     self.nrid = nrid
     self.nrtype = nrtype
-    self.Psi4modes = NRmode()
+    self.Psi4modes = []
 
-  def populate_modes(self, lmax)
+  def populate_modes(self, lmax):
+    '''Populate modes with data for l<=lmax'''
+    modelist = []
+    llist = arange(lmax-1) + 2
+    for l in llist:
+      modelist.append()
+      mlist = arange(2*l+1) - l
+      for m in mlist:
+      thisNR_mode = NR_mode(l, m, nrtype)
+        
+    self.Psi4modes = modelist
+
+    
+  def Psi4mode(self, l, m):
+    '''Get the mode (l,m)'''
+    return
 
 
 
 class NR_mode: 
   '''Class that holds NR data for one (l,m) mode of Psi4'''
-  def __init__(self, l, m, r=None, source=None):
+  def __init__(self, l, m, nrtype, source=None):
     self.l = l
     self.m = m
+    self.nrtype = nrtype
+    if abs(m) > l:
+      print "ERROR: Cannot generate mode with |m| > l. Exiting..."
+      sys.exit(-1)
     if source is not None:
       self.write_data(source)
 
   def write_data(self, source):
     '''write data to mode'''
+    loadmodefunc = loadFuncDict[self.nrtype]
+    nrtime, Psi4C = loadmodefunc(source)
+    #sanity checks
+    self.t = nrtime
+    self.Psi4C = Psi4C
     
 
 
