@@ -2,7 +2,7 @@ import numpy as np
 
 
 def LoadUliMode(filename):
-    dat = np.loadtxt(filename)
+    dat = np.genfromtxt(filename)
     Time = dat[:,0]
     Re   = dat[:,1]
     Im   = dat[:,2]
