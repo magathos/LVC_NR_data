@@ -10,10 +10,10 @@ sys.path.insert(0, './import/')
 
 from NR_Import import *
 from NR_Export import *
-
+'''
 
 class NR_data:
-  '''Class that hosts imported data from NR simulations'''
+#  Class that hosts imported data from NR simulations
   def __init__(self, nrtype, nrid, lmax=2):
     self.lmax = lmax
     self.nrid = nrid
@@ -25,7 +25,7 @@ class NR_data:
 
 
 class NR_mode: 
-  '''Class that holds NR data for one (l,m) mode of Psi4'''
+#  Class that holds NR data for one (l,m) mode of Psi4
   def __init__(self, l, m, r=None, source=None):
     self.l = l
     self.m = m
@@ -33,7 +33,7 @@ class NR_mode:
       self.write_data(source)
 
   def write_data(self, source):
-    '''write data to mode'''
+    write data to mode
     
 
 
@@ -47,6 +47,8 @@ parser.add_argument('-m', '--mode', type=int, nargs=2)
 # Load Data
 input_path = "/store/DAMTP/cjm96/public_html/Modes/"
 #data = LoadUliData(input_path)
+
+'''
 
 # Save Data
 output_path = os.environ['HOME']+"/Desktop/"
