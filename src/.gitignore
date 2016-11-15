@@ -1,0 +1,4 @@
+*.py~
+src/*.py*~
+src/export/*.py*~
+src/import/*.py*~
