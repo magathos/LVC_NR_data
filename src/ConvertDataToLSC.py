@@ -11,9 +11,8 @@ sys.path.insert(0, './import/')
 from NR_Import import *
 from NR_Export import *
 
-
 class NR_data:
-  '''Class that hosts imported data from NR simulations'''
+#  Class that hosts imported data from NR simulations
   def __init__(self, nrtype, nrid, lmax=2):
     self.lmax = lmax
     self.nrid = nrid
@@ -72,8 +71,9 @@ parser.add_argument('-m', '--mode', type=int, nargs=2)
 input_path = "/store/DAMTP/cjm96/public_html/Modes/"
 #data = LoadUliData(input_path)
 
+
 # Save Data
-output_path = "$HOME/Desktop/"
+output_path = os.environ['HOME']+"/Desktop/"
 output_file = "test.h5"
 
 data = np.zeros((100,2))
