@@ -1,18 +1,19 @@
 import numpy as np
 import cmath
 import h5py
+import os
 import romspline
 
 def SaveData(data, output_file, output_path):
 
-    filename = output_path + output_file
+    filename = os.path.join(output_path, output_file)
     fp = h5py.File(filename, 'w')
 
     Lmax = 3
-
+    r = "02"
     for l in np.arange(2, Lmax+1):
         for m in np.arange(-l, l+1):
-            mode = data.Psi4modes(l,m)
+            mode = data.Psi4mode(l,m,r)
             Time   = mode.t
             Psi4   = mode.Psi4C
 
