@@ -127,30 +127,48 @@ class NR_mode:
 
 if __name__ == "__main__":
 
-  parser.add_argument('-t', '--NRtype', type=str, dest='NRtype', required=True, nargs=1, choices=['Uli','GRChombo'], help='Type of NR data to be imported. Currently supported: {"Uli", "GRChombo"}')
-  parser.add_argument('-m', '--mode', type=int, nargs=2)
-  parser.add_argument('-l', '--lmax', type=int, nargs=1)
-  parser.add_argument('-i', '--inputdir', dest='inputdir', type=str, nargs=1)
-  parser.add_argument('-o', '--outputdir', dest='outputdir', type=str, nargs=1)
+  parser.add_argument('-t', '--NRtype', type=str, dest='NRtype', required=True, choices=['Uli','GRChombo'], help='Type of NR data to be imported. Currently supported: {"Uli", "GRChombo"}')
+  parser.add_argument('-m', '--mode', type=int, dest='mode', nargs=2, default=None)
+  parser.add_argument('-l', '--lmax', type=int, default=None)
+  parser.add_argument('-n', '--NRID', dest='NRID', required=True, type=str)
+  parser.add_argument('-i', '--inputdir', dest='inputdir', type=str)
+  parser.add_argument('-o', '--outputdir', dest='outputdir', type=str)
   
+  args = parser.parse_args()
   # Hardcoded list of modes (FIXME)
-  modelist = [[2,2]]
+  # modelist = [[2,2]]
+  print args.NRtype
+  NRtype = args.NRtype
+  NRID = args.NRID
+  lmax = args.lmax
+  mode = args.mode
 
-  NRtype = parser.NRtype
-  
   # Load Data
-  input_path = parser.inputdir
+  input_path = os.path.abspath(args.inputdir)
+  if not os.path.isdir(input_path):
+    print "ERROR", input_path, " does not exist! Exiting..."
+    sys.exit(-1)
   #data = LoadUliData(input_path)
   
   
   # Save Data
-  output_path = parser.outputdir
+  output_path = os.path.abspath(args.outputdir)
+  if not os.path.isdir(output_path):
+    os.makedirs(output_path)
   output_file = os.path.join(output_path,"test.h5")
   
-  data = NR_data(NRtype, NRID, input_path, lmax)
 
-  data = np.zeros((100,2))
-  data[:,0] = np.arange(0,10,0.1)
-  data[:,1] = np.sin(data[:,0])
+  nrdata = NR_data(NRtype, NRID, input_path, lmax)
+  nrdata.populate_modes()
+
+  # data = np.zeros((100,2))
+  # data[:,0] = np.arange(0,10,0.1)
+  # data[:,1] = np.sin(data[:,0])
   
-  SaveData(data, output_file, output_path)
+  print "Imported the following modes:"
+  print nrdata.modelist_dict
+  for rex in nrdata.Psi4modes.keys():
+    for (l,m) in nrdata.Psi4modes[rex].keys():
+      print rex, l, m
+
+  SaveData(nrdata, output_file, output_path)
