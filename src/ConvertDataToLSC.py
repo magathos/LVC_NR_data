@@ -60,6 +60,7 @@ class NR_data:
 
   def parse_params(self):
     '''Read parameter file(s)'''
+    loadParamsFDict[self.nrtype](self.sourcedir) # Currently just prints stuff
     
   def read_modelists(self):
     '''Read dictionary of lists of modes available in source directory (per rex)'''
@@ -159,16 +160,17 @@ if __name__ == "__main__":
   
 
   nrdata = NR_data(NRtype, NRID, input_path, lmax)
+  #nrdata.parse_params()
   nrdata.populate_modes()
 
-  # data = np.zeros((100,2))
-  # data[:,0] = np.arange(0,10,0.1)
-  # data[:,1] = np.sin(data[:,0])
-  
   print "Imported the following modes:"
   print nrdata.modelist_dict
   for rex in nrdata.Psi4modes.keys():
     for (l,m) in nrdata.Psi4modes[rex].keys():
       print rex, l, m
 
+
+  print "Saving modes to file..."
   SaveData(nrdata, output_file, output_path)
+
+  print "DONE!"

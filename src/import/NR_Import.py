@@ -12,7 +12,7 @@ def LoadUliMode(filename):
 
 def LoadUliData(l, m, rex, inputdir, root='Psi4_vars'):
   '''Load NR data for Psi4(t) from Uli's output file'''
-  filename = os.path.join(inputdir, root+'_l'+str(l)+'_m'+str(m)+'_rex'+str(rex).zfill(2))
+  filename = os.path.join(inputdir, "Modes", root+'_l'+str(l)+'_m'+str(m)+'_rex'+str(rex).zfill(2))
   return LoadUliMode(filename)
 
 def LoadUliParams(inputdir, paramfile=None):
@@ -21,16 +21,20 @@ def LoadUliParams(inputdir, paramfile=None):
     # convention is using parent directory name as root for parameter filename
     paramfile = os.path.split(os.path.normpath(inputdir))[-1]+'.par'
   filename = os.path.join(inputdir, paramfile)
+  
+  f = open(filename, 'r')
+  print f.read()
   return os.path.abspath(filename)
   
 def ListUliModes(inputdir):
   '''Populate list of available modes for Psi4 from Uli's data directory'''
-  flist = os.listdir(inputdir)
+  modesdir = os.path.join(inputdir, "Modes")
+  flist = os.listdir(modesdir)
   modes = {}
   for f in flist:
     fdec = f.split('_')
-    if os.path.isfile(os.path.join(inputdir,f)) and fdec[0]+'_'+fdec[1] == 'Psi4_vars':
-    #  print f
+    if os.path.isfile(os.path.join(modesdir,f)) and fdec[0]+'_'+fdec[1] == 'Psi4_vars':
+      print f
       l=fdec[2][1:]
       m=fdec[3][1:]
       rex=fdec[4][3:]
