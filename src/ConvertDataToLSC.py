@@ -5,24 +5,36 @@ import sys
 import argparse as ap
 
 parser = ap.ArgumentParser()
-sys.path.insert(0, './export/')
-sys.path.insert(0, './import/')
+
+sys.path.insert(0, os.path.abspath('/home/ma748/projects/LVC_NR/src/import/'))
+sys.path.insert(0, os.path.abspath('/home/ma748/projects/LVC_NR/src/export/'))
 
 from NR_Import import *
 from NR_Export import *
 
+
+# Function Definitions
+
 def modesuptolmax(lmax):
+  '''Returns a set of (l,m) tuples from l=2 up to lmax'''
   res = []
   for l in arange(lmax-1) +2:
-    for m in arange(2*l+1)-lmax:
+    for m in arange(2*l+1)-l:
       res.append((l,m))
   return set(res)
+
+def get_lmax(modelist):
+  '''Returns max value of l in the list of modes'''
+  return max(array(modelist)[:,0])
 
 def check_modelist(modelist, lmax=None):
   '''modelist is list of (l,m) tuples. Check whether all modes up to lmax are included.'''
   if lmax is None:
-    lmax = max(array(modelist)[:,0])
+    lmax = get_lmax(modelist)
   return len(set(modelist) - modesuptolmax(lmax))
+
+
+# Class Definitions
 
 class NR_data:
 #  Class that hosts imported data from NR simulations
@@ -30,56 +42,55 @@ class NR_data:
     self.lmax = lmax
     self.nrid = nrid
     self.nrtype = nrtype
-    self.sourcedir = sourcedir
-    self.Psi4modes = []
+    self.sourcedir = os.path.abspath(sourcedir)
+    self.Psi4modes = {}
     if lmax is None:
-      self.readmodelist()
+      self.read_modelists()
     else:
-      self.llist = arange(self.lmax-1) + 2
-      for l in self.llist:
-        mlist = arange(2*l+1) - l
-        modedict[l] = {}
+      if rlist is None:
+        print "ERROR: Extraction radii not given! Exiting..."
+        sys.exit(-1)
+      self.modelist_dict = {}
+      for rex in rlist:
+        self.modelist[rex] = modesuptolmax(lmax)
     if rlist is None:
-      self.readrlist()
+      self.extraction_radii = self.modelist_dict.keys()
+    else:
+      self.extraction_radii = rlist
 
   def parse_params(self):
     '''Read parameter file(s)'''
     
-
-  def read_modelist(self):
-    '''Read list of modes available in source directory'''
-    modelist = []
+  def read_modelists(self):
+    '''Read dictionary of lists of modes available in source directory (per rex)'''
+    self.modelist_dict = {}
     loc = self.sourcedir
-        
+    self.modelist_dict = listModesFDict[self.nrtype](loc)
+    
 
 
-  def populate_modes(self, lmax, rlist):
-    '''Populate modes with data for l<=lmax'''
+  def populate_modes(self):
+    '''Populate modes with data'''
     modedict = {}
-    if lmax is None:
-      print "Importing all available modes... not implemented yet, exiting..."
-      sys.exit(-1)
-    for l in llist:
-      mlist = arange(2*l+1) - l
-      modedict[l] = {}
-      for m in mlist:
-        for r in rlist:
-          thisNR_mode = NR_mode(l, m, r, self.nrtype, self.sourcedir)
-          thisNR_mode.load_data()
-          modedict[l][m] = thisNR_mode
+    for rex in self.modelist_dict.keys():
+      modedict[rex] = {}
+      for (l,m) in self.modelist_dict[rex]:
+        thisNR_mode = NR_mode(l, m, rex, self.nrtype, self.sourcedir)
+        thisNR_mode.load_data()
+        modedict[rex][(l,m)] = thisNR_mode
         
-    self.Psi4modes = modelist
+    self.Psi4modes = modedict
 
     
-  def Psi4mode(self, l, m):
+  def Psi4mode(self, l, m, r):
     '''Get the mode (l,m)'''
-    if l not in self.Psi4modes.keys():
-      print "Mode l=",l,", m=",m," do not exist. Exiting..."
+    if r not in self.Psi4modes.keys():
+      print "Extraction radius ",r," does not exist. Exiting..."
       sys.exit(-1)
-    elif m not in self.Psi4modes[l].keys():
-      print "Mode l=",l,", m=",m," does not exist. Exiting..."
+    elif (l,m) not in self.Psi4modes[r].keys():
+      print "Mode l=",l,", m=",m," does not exist at extraction radius ",r,". Exiting..."
       sys.exit(-1)
-    return self.Psi4modes[l][m]
+    return self.Psi4modes[r][(l,m)]
 
 
 
@@ -95,15 +106,22 @@ class NR_mode:
       print "ERROR: Cannot generate mode with |m| > l. Exiting..."
       sys.exit(-1)
     if source is not None:
-      self.write_data(source)
+      print "Not implemented!"
+      self.load_data(source)
 
   def load_data(self, source=None):
     '''Write Psi4 time series data to mode'''
     loadmodefunc = loadDataFDict[self.nrtype]
-    nrtime, Psi4C = loadmodefunc(self.l, self.m, self.r, self.sourcedir)
+    nrtime, Psi4C = loadmodefunc(self.l, self.m, self.radius, self.sourcedir)
     #sanity checks
     self.t = nrtime
     self.Psi4C = Psi4C
+
+  # def scale_data(self, mass):
+  #   '''Scales data by <mass>'''
+  #   self.radius = mass*self.radius
+  #   self.t = mass*self.t
+  #   self.Psi4c = 
     
 
 

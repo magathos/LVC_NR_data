@@ -1,9 +1,9 @@
-import numpy as np
+from pylab import *
 import os
 import sys
 
 def LoadUliMode(filename):
-    dat = np.genfromtxt(filename)
+    dat = genfromtxt(filename)
     Time = array(dat[:,0])
     Re   = dat[:,1]
     Im   = dat[:,2]
@@ -13,28 +13,37 @@ def LoadUliMode(filename):
 def LoadUliData(l, m, rex, inputdir, root='Psi4_vars'):
   '''Load NR data for Psi4(t) from Uli's output file'''
   filename = os.path.join(inputdir, root+'_l'+str(l)+'_m'+str(m)+'_rex'+str(rex).zfill(2))
-  LoadUliMode(filename)
+  return LoadUliMode(filename)
 
 def LoadUliParams(inputdir, paramfile=None):
   '''Load simulation parameters from Uli's param file'''
   if paramfile is None:
     # convention is using parent directory name as root for parameter filename
-    paramfile = os.path.splitdrive(inputdir)[-1]+'.par'
-
+    paramfile = os.path.split(os.path.normpath(inputdir))[-1]+'.par'
   filename = os.path.join(inputdir, paramfile)
-  return filename
+  return os.path.abspath(filename)
   
 def ListUliModes(inputdir):
   '''Populate list of available modes for Psi4 from Uli's data directory'''
-  flist = os.listdir(loc)
-  modes = []
+  flist = os.listdir(inputdir)
+  modes = {}
   for f in flist:
     fdec = f.split('_')
-    if fdec[0]+'_'+fdec[1] == 'Psi4_vars':
+    if os.path.isfile(os.path.join(inputdir,f)) and fdec[0]+'_'+fdec[1] == 'Psi4_vars':
+    #  print f
       l=fdec[2][1:]
       m=fdec[3][1:]
-      reslist.append[(l,m)]
+      rex=fdec[4][3:]
+      if rex not in modes.keys():
+        modes[rex]=[]
+      modes[rex].append((int(l),int(m)))
   return modes
+
+def readrlist(self):
+  '''Get list of extraction radii from the param file'''
+
+
+
 
 def LoadGRChomboParams(inputdir, paramfile=None):
   '''Load simulation parameters from GRChombo param file'''
