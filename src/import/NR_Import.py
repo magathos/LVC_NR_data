@@ -1,6 +1,29 @@
 from pylab import *
 import os
 import sys
+import pyparsing as pp
+
+def LeanParser(s):
+  
+  p.setName("LeanParser")
+  cls = pp.Word(pp.alphas, pp.alphanums+'_')
+  attr = pp.Word(pp.alphas, pp.alphanums+'_')
+  par = cls + '::' + attr
+  scal = Word(pp.nums+'-'+'.'+'e'+'d')
+  integ = Word(pp.nums+'-')
+  par = cls + '::' + attr + pp.Optional("[" + integ + "]")
+  
+  string = '"' + Word(pp.alphanums+'_'+pp.LineEnd()) + '"' 
+  value = pp.Or(scal, string, barestring)
+  assign = par + "=" + value  
+  
+  comment = pp.pythonStyleComment
+  line = assign + pp.Optional(comment)
+  
+  parseFile()
+  
+
+  
 
 def LoadUliMode(filename):
     dat = genfromtxt(filename)
@@ -24,6 +47,7 @@ def LoadUliParams(inputdir, paramfile=None):
   
   f = open(filename, 'r')
   print f.read()
+  f.search()
   return os.path.abspath(filename)
   
 def ListUliModes(inputdir):
