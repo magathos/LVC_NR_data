@@ -1,13 +1,14 @@
 #!/bin/python
-from pylab import *
+#from pylab import *
+from numpy import *
 import os
 import sys
 import argparse as ap
 
 parser = ap.ArgumentParser()
 
-sys.path.insert(0, os.path.abspath('/home/ma748/projects/LVC_NR/src/import/'))
-sys.path.insert(0, os.path.abspath('/home/ma748/projects/LVC_NR/src/export/'))
+sys.path.insert(0, os.path.abspath('./import/'))
+sys.path.insert(0, os.path.abspath('./export/'))
 
 from NR_Import import *
 from NR_Export import *
@@ -60,7 +61,9 @@ class NR_data:
 
   def parse_params(self):
     '''Read parameter file(s)'''
-    loadParamsFDict[self.nrtype](self.sourcedir) # Currently just prints stuff
+    pfname, metadatas  = loadParamsFDict[self.nrtype](self.sourcedir) # Currently just prints stuff
+    self.metadata = LVC_metadata(pfname, "test")
+    print "TODO: change name"
     
   def read_modelists(self):
     '''Read dictionary of lists of modes available in source directory (per rex)'''
@@ -125,6 +128,42 @@ class NR_mode:
   #   self.Psi4c = 
     
 
+class LVC_metadata:
+  '''Class containing LVC compatible metadata for NR simulations'''
+  def __init__(self, filename, name, altnames="", fmt=1):
+    self.filename = filename
+    self.NRformat = str(fmt)
+    self.NRtype = "NRinjection"
+    self.altnames = altnames
+    self.NRgroup = "DAMTP"
+    
+  
+  def readMetaData(self, metadatadict):
+    self.metadatadict = metadatadict
+    return
+    
+    
+  def isFormatComplete(self):
+
+    status = 0
+
+    # check for format-1 variables
+    if self.name and self.NRtype and self.filename and self.NRformat and self.altnames and self.NRgroup:
+      status = 1
+    # check for format-2 variables
+    if fmt>1:
+      if not (self.fmt2var1 and self.fmt2var2):
+        print 'Metadata is not format-2 complete'
+        return status
+      status = 2
+    # check for format-3 variables
+    if fmt>2:
+      if not (self.fmt3var1 and self.fmt3var2):
+        print 'Metadata is not format-3 complete'
+        status = False
+      status = 3
+    return status
+
 
 if __name__ == "__main__":
 
@@ -160,7 +199,7 @@ if __name__ == "__main__":
   
 
   nrdata = NR_data(NRtype, NRID, input_path, lmax)
-  #nrdata.parse_params()
+  nrdata.parse_params()
   nrdata.populate_modes()
 
   print "Imported the following modes:"
