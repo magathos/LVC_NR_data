@@ -63,6 +63,8 @@ class NR_data:
     '''Read parameter file(s)'''
     pfname, metadatas  = loadParamsFDict[self.nrtype](self.sourcedir) # Currently just prints stuff
     self.metadata = LVC_metadata(pfname, "test")
+    self.metadata.readMetaData(metadatas)
+    self.metadata.Lmax = self.lmax
     print "TODO: change name"
     
   def read_modelists(self):

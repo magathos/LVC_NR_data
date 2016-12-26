@@ -12,7 +12,7 @@ def SaveData(data, output_file, output_path):
     filename = os.path.join(output_path, output_file)
     fp = h5py.File(filename, 'w')
 
-    Lmax = 3
+    Lmax = 2
     r = "08"
     for l in np.arange(2, Lmax+1):
         for m in np.arange(-l, l+1):

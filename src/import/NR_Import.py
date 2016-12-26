@@ -66,7 +66,7 @@ def LoadUliParams(inputdir, paramfile=None):
   paramdict["license"] = "LVC-internal"
 
   # Simulation setup info
-  paramdict["Lmax"] = "8"
+  # paramdict["Lmax"] = "8"
   paramdict["simulation-type"] = "aligned-spins"
   paramdict["auxiliary-info"] = "LEAN_v1.1, Cactus_v3.2"
   paramdict["NR-techniques"] =  "BSSN"
