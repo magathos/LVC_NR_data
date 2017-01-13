@@ -1,5 +1,4 @@
 #!/bin/python
-#from pylab import *
 from numpy import *
 import os
 import sys
@@ -170,11 +169,12 @@ class LVC_metadata:
 if __name__ == "__main__":
 
   parser.add_argument('-t', '--NRtype', type=str, dest='NRtype', required=True, choices=['Uli','GRChombo'], help='Type of NR data to be imported. Currently supported: {"Uli", "GRChombo"}')
-  parser.add_argument('-m', '--mode', type=int, dest='mode', nargs=2, default=None)
-  parser.add_argument('-l', '--lmax', type=int, default=None)
-  parser.add_argument('-n', '--NRID', dest='NRID', required=True, type=str)
-  parser.add_argument('-i', '--inputdir', dest='inputdir', type=str)
-  parser.add_argument('-o', '--outputdir', dest='outputdir', type=str)
+  #parser.add_argument('-m', '--mode', type=int, dest='mode', nargs=2, default=None)
+  parser.add_argument('-l', '--lmax', type=int, default=None, help="Integer that sets the maximum l value for the modes")
+  parser.add_argument('-n', '--NRID', dest='NRID', required=True, type=str, help="NR simulation identifier")
+  parser.add_argument('-i', '--inputdir', dest='inputdir', type=str, help="Path to the NR data")
+  parser.add_argument('-o', '--outputdir', dest='outputdir', type=str, help="Path to the output directory")
+  parser.add_argument('-c', '--meta-config', dest='metacfg', type=FILE, help="Path to the config file for importing metadata")
   
   args = parser.parse_args()
   # Hardcoded list of modes (FIXME)
@@ -184,6 +184,7 @@ if __name__ == "__main__":
   NRID = args.NRID
   lmax = args.lmax
   mode = args.mode
+  metacfg = args.metacfg
 
   # Load Data
   input_path = os.path.abspath(args.inputdir)

@@ -1,9 +1,23 @@
 #!/bin/python
-#from pylab import *
 from numpy import *
 import os
 import sys
 import pyparsing as pp
+
+
+def loadMetaConf(cfgfile):
+  '''Load metadata from config file'''
+  import ConfigParser
+  cp = ConfigParser.SafeConfigParser()
+  cp.read(cfgfile)
+  metadict = {}
+  metadict.update(dict(cp.items('code')))
+  metadict.update(dict(cp.items('simulation')))
+  metadict.update(dict(cp.items('cbc')))
+  metadict.update(dict(cp.items('format-2')))
+  metadict.update(dict(cp.items('format-3')))
+  return metadict
+  
 
 def LeanParser(s):
   

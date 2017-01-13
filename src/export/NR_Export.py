@@ -37,6 +37,6 @@ def SaveData(data, output_file, output_path):
     for attr in data.metadata.metadatadict:
         fp.attrs[attr] = data.metadata.metadatadict[attr]
 
-    fp.close()
-    return 1
+    status = fp.close()
+    return status
 
