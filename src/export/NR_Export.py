@@ -8,14 +8,19 @@ sys.path.append(os.path.abspath('../romspline/'))
 import romSpline
 
 def SaveData(data, output_file, output_path):
+    '''Save NR data to hdf5 file
+    data [NR_data]
+    output_file [filename]
+    output_path [path to output directory]
+    '''
 
     filename = os.path.join(output_path, output_file)
-    fp = h5py.File(filename, 'w')
+    with h5py.File(filename, 'w') as fp:
 
-    Lmax = 2
-    r = "08"
-    for l in np.arange(2, Lmax+1):
-        for m in np.arange(-l, l+1):
+        Lmax = 2
+        r = "08"
+        for l in np.arange(2, Lmax+1):
+          for m in np.arange(-l, l+1):
             mode = data.Psi4mode(l,m,r)
             Time   = mode.t
             Psi4   = mode.Psi4C
@@ -30,13 +35,20 @@ def SaveData(data, output_file, output_path):
             spline = romSpline.ReducedOrderSpline(Time, phase, verbose=False)
             group  = fp.create_group( 'phase_l'+str(l)+'_m'+str(m) )
             spline.write( group )
+            
+        group = fp.create_group('auxiliary-info')
 
-    for attr in set(data.metadata.__dict__)-set(["metadatadict"]):
-        fp.attrs[attr] = data.metadata.__dict__[attr]
+        for attr in set(data.metadata.__dict__)-set(["metadatadict"]):
+            fp.attrs[attr] = data.metadata.__dict__[attr]
 
-    for attr in data.metadata.metadatadict:
-        fp.attrs[attr] = data.metadata.metadatadict[attr]
+        for attr in data.metadata.metadatadict:
+            print attr
+            if attr is 'auxiliary-info':
+                attr.write( group )
+            else:
+                fp.attrs[attr] = data.metadata.metadatadict[attr]
+            
 
-    status = fp.close()
-    return status
+#    status = fp.close()
+    return filename
 
