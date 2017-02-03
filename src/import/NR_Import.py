@@ -72,9 +72,10 @@ def LoadUliParams(inputdir, paramfile=None):
   paramdict = {}
 
   # Group/code info
+  paramdict["alternative-names"] = ""
   paramdict["NR-group"] = "DAMTP"
   paramdict["NR-code"] = "LEAN"
-  paramdict["modification-date"] = os.path.getmtime(filename)
+  paramdict["modification-date"] = str(os.path.getmtime(filename))
   paramdict["point-of-contact-email"] = "magathos@damtp.cam.ac.uk"
   paramdict["INSPIRE-bibtex-keys"] = "Sperhake:2006cy"
   paramdict["license"] = "LVC-internal"
@@ -92,6 +93,9 @@ def LoadUliParams(inputdir, paramfile=None):
   # CBC parameters
   paramdict["object1"] = "BH"
   paramdict["object2"] = "BH"
+  paramdict["mass1"] = 11.5
+  paramdict["mass2"] = 1.3
+  paramdict["eta"] = 0.22
   # paramdict["mass1"] = parserdict["BHInfo::bh_mass_ini[1]"]
   # paramdict["mass2"] = parserdict["BHInfo::bh_mass_ini[2]"]
   # paramdict["eta"] = float(parserdict["BHInfo::bh_mass_ini[1]"])/float(parserdict["BHInfo::bh_mass_ini[2]"])
@@ -109,8 +113,9 @@ def LoadUliParams(inputdir, paramfile=None):
   paramdict["nhaty"] = 0.0
   paramdict["nhatz"] = 1.0
   paramdict["Omega"] = 0.05
+  paramdict["f_lower_at_1MSUN"] = 20.0
   paramdict["eccentricity"] = 0.0
-  paramdict["mean_anomaly"] = -1
+  paramdict["mean_anomaly"] = -1.0
   #  paramdict[""] = 
   return paramfile, paramdict
   
