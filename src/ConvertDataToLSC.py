@@ -12,6 +12,9 @@ sys.path.insert(0, os.path.abspath('./export/'))
 from NR_Import import *
 from NR_Export import *
 
+format1vars = []
+format2vars = []
+format3vars = []
 
 # Function Definitions
 
@@ -46,6 +49,10 @@ class NR_data:
     self.Psi4modes = {}
     if lmax is None:
       self.read_modelists()
+      lmax=0
+      for rex in self.modelist_dict.keys():
+        lmax = max(lmax, get_lmax(self.modelist_dict[rex]))
+      self.lmax = lmax
     else:
       if rlist is None:
         print "ERROR: Extraction radii not given! Exiting..."
@@ -60,9 +67,9 @@ class NR_data:
 
   def parse_params(self):
     '''Read parameter file(s)'''
-    pfname, metadatas  = loadParamsFDict[self.nrtype](self.sourcedir) # Currently just prints stuff
+    pfname, metadict  = loadParamsFDict[self.nrtype](self.sourcedir) # Currently just prints stuff
     self.metadata = LVC_metadata(pfname, "test")
-    self.metadata.readMetaData(metadatas)
+    self.metadata.readMetaData(metadict)
     self.metadata.Lmax = self.lmax
     print "TODO: change name"
     
@@ -133,10 +140,11 @@ class LVC_metadata:
   '''Class containing LVC compatible metadata for NR simulations'''
   def __init__(self, filename, name, altnames="", fmt=1):
     self.filename = filename
-    self.NRformat = str(fmt)
-    self.NRtype = "NRinjection"
-    self.altnames = altnames
-    self.NRgroup = "DAMTP"
+    self.name = name
+    self.Format = fmt
+    self.type = "NRinjection"
+    #    self.alternative-names = altnames
+    #    self.NRgroup = "DAMTP"
     
   
   def readMetaData(self, metadatadict):
@@ -145,7 +153,7 @@ class LVC_metadata:
     
     
   def isFormatComplete(self):
-
+    '''TODO'''
     status = 0
 
     # check for format-1 variables
@@ -174,7 +182,7 @@ if __name__ == "__main__":
   parser.add_argument('-n', '--NRID', dest='NRID', required=True, type=str, help="NR simulation identifier")
   parser.add_argument('-i', '--inputdir', dest='inputdir', type=str, help="Path to the NR data")
   parser.add_argument('-o', '--outputdir', dest='outputdir', type=str, help="Path to the output directory")
-  parser.add_argument('-c', '--meta-config', dest='metacfg', type=FILE, help="Path to the config file for importing metadata")
+  parser.add_argument('-c', '--meta-config', dest='metacfg', type=str, help="Path to the config file for importing metadata")
   
   args = parser.parse_args()
   # Hardcoded list of modes (FIXME)
@@ -183,7 +191,7 @@ if __name__ == "__main__":
   NRtype = args.NRtype
   NRID = args.NRID
   lmax = args.lmax
-  mode = args.mode
+  #  mode = args.mode
   metacfg = args.metacfg
 
   # Load Data
