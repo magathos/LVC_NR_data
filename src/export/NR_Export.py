@@ -5,7 +5,7 @@ import os
 import sys
 
 sys.path.append(os.path.abspath('../romspline/'))
-import romSpline
+import romspline
 
 def SaveData(data, output_file, output_path):
     '''Save NR data to hdf5 file
@@ -28,11 +28,11 @@ def SaveData(data, output_file, output_path):
             amp   = np.array([ abs(p) for p in Psi4 ])
             phase = np.array([ cmath.phase(p) for p in Psi4 ])
 
-            spline = romSpline.ReducedOrderSpline(Time, amp, verbose=False)
+            spline = romspline.ReducedOrderSpline(Time, amp, verbose=False)
             group  = fp.create_group( 'amp_l'+str(l)+'_m'+str(m) )
             spline.write( group )
 
-            spline = romSpline.ReducedOrderSpline(Time, phase, verbose=False)
+            spline = romspline.ReducedOrderSpline(Time, phase, verbose=False)
             group  = fp.create_group( 'phase_l'+str(l)+'_m'+str(m) )
             spline.write( group )
             
